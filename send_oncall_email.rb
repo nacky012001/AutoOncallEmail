@@ -66,14 +66,14 @@ def not_yet_send_email?(date, last_email_time)
 end
 
 def process
-  if acquire_pid_file("send_oncall_email.pid")
+  if acquire_pid_file(File.join(File.dirname(__FILE__), 'send_oncall_email.pid'))
     now = Time.now
     shift_start_time = Time.new(now.year, now.month, now.day, 10, 00)
     shift_end_time = Time.new(now.year, now.month, now.day, 10, 30)
 
-    engines = YAML.load_file('./send_oncall_email.yml')[:oncall_engines]
-    dat_file = File.open('./send_oncall_email.dat', File::RDWR|File::CREAT)
-    dat = YAML.load_file('./send_oncall_email.dat') || {}
+    engines = YAML.load_file(File.join(File.dirname(__FILE__), 'send_oncall_email.yml'))[:oncall_engines]
+    dat_file = File.open(File.join(File.dirname(__FILE__), './send_oncall_email.dat'), File::RDWR|File::CREAT)
+    dat = YAML.load_file(File.join(File.dirname(__FILE__), './send_oncall_email.dat')) || {}
     
     engines.each do |engine|
       dates = engine[:dates].map { |d| yy, mm, dd = d.split('-'); Time.new(yy, mm, dd) }
