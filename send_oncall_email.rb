@@ -72,8 +72,8 @@ def process
     shift_end_time = Time.new(now.year, now.month, now.day, 10, 30)
 
     engines = YAML.load_file(File.join(File.dirname(__FILE__), 'send_oncall_email.yml'))[:oncall_engines]
-    dat_file = File.open(File.join(File.dirname(__FILE__), './send_oncall_email.dat'), File::RDWR|File::CREAT)
-    dat = YAML.load_file(File.join(File.dirname(__FILE__), './send_oncall_email.dat')) || {}
+    dat_path = File.join(File.dirname(__FILE__), './send_oncall_email.dat')
+    dat = File.file?(dat_path) ? YAML.load_file(dat_path) : {}
     
     engines.each do |engine|
       dates = engine[:dates].map { |d| yy, mm, dd = d.split('-'); Time.new(yy, mm, dd) }
@@ -99,6 +99,7 @@ def process
       end
     end
     
+    dat_file = File.open(dat_path, File::WRONLY|File::TRUNC|File::CREAT)
     dat_file.write(dat.to_yaml)
     dat_file.close
 
